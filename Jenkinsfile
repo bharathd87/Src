@@ -1,8 +1,8 @@
 pipeline {
-    agent { label 'linuxgit' }
+    agent any
 
     environment {
-        GIT_REPO = 'https://gitlab.com/sandeep160/pipeline-e2e.git'
+        GIT_REPO = 'https://github.com/bharathd87/legend.git'
         BRANCH = 'main'
     }
     
@@ -18,7 +18,7 @@ pipeline {
                 echo "Cloning the repo from Gitlab ........."
                 git branch: "${BRANCH}",
                     url: "${GIT_REPO}",
-                    credentialsId: 'gitlab'
+                    credentialsId: 'git_bharath'
             }
         }
         stage('Build') {
@@ -31,21 +31,34 @@ pipeline {
     }
 }
 post {
-        always {
-        unstable {
-            echo 'Build marked as UNSTABLE!'
-            emailext (
-                subject: "Build Unstable: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
-                body: """<p>Build became <b>UNSTABLE</b> in job <b>${env.JOB_NAME}</b> [#${env.BUILD_NUMBER}]</p>""",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-            )
-        }
-        failure {
-            echo 'Build failed!'
-            emailext (
-                subject: "Build Failed: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
-                body: """<p>Build failed in job <b>${env.JOB_NAME}</b> [#${env.BUILD_NUMBER}]</p>""",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-            )
-        }
-    } 
+    always {
+        echo 'Pipeline finished'
+    }
+    unstable {
+        echo 'Build marked as UNSTABLE!'
+        emailext (
+            to: 'bharath.hyr96@gmail.com',
+            subject: "Build Unstable: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
+            body: """<p>Build became <b>UNSTABLE</b> in job <b>${env.JOB_NAME}</b> [#${env.BUILD_NUMBER}]</p>"""
+        )
+    }
+    failure {
+        echo 'Build failed!'
+        emailext (
+            to: 'bharath.hyr96@gmail.com',
+            subject: "Build Failed: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
+            body: """<p>Build failed in job <b>${env.JOB_NAME}</b> [#${env.BUILD_NUMBER}]</p>"""
+        )
+    }
+    success {
+        echo 'Build succeeded!'
+        emailext (
+            to: 'bharath.hyr96@gmail.com',
+            subject: "Build Success: ${env.JOB_NAME} [#${env.BUILD_NUMBER}]",
+            body: """<p>Build succeeded in job <b>${env.JOB_NAME}</b> [#${env.BUILD_NUMBER}]</p>
+                     <p>See details: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>"""
+        )
+    }
+}
+
+       
