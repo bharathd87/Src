@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = 'https://github.com/bharathd87/legend.git'
+        GIT_REPO = 'https://github.com/bharathd87/Src.git'
         BRANCH = 'main'
     }
     
